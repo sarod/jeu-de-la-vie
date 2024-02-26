@@ -1,0 +1,17 @@
+table.grid {
+    border: 1px solid ;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+table.grid td {
+    border: 1px solid;
+}
+
+.alive {
+    background-color: white;
+}
+
+.dead {
+    background-color: black;
+}

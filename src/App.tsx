@@ -1,15 +1,15 @@
 import './App.css'
-import { Grille } from './components/Grille';
-import { creerGrille, grilleAleatoire } from './jeu/grilleAleatoire';
+import { Grid } from './components/Grid';
+import { makeCellStateMatrix, makeRandomCellStateMatrix } from './game/makeCellStateMatrix';
 import { useState, useEffect } from 'react';
-import { simuleUnTour } from './jeu/simuleUnTour';
-import { basculerCellule } from './jeu/basculerCellule';
+import { playIteration } from './game/playIteration';
+import { toggleCellState } from './game/toggleCellState';
 
 function App() {
-  const [nbLigne] = useState(50);
-  const [nbColonne] = useState(50);
-  const [cellules, setCellules] = useState(() => grilleAleatoire(nbLigne, nbColonne));
-  const [vitesse, setRange] = useState(1000);
+  const [lineCount] = useState(50);
+  const [rowCount] = useState(50);
+  const [cellStateMatrix, setCellStateMatrix] = useState(() => makeRandomCellStateMatrix(lineCount, rowCount));
+  const [vitesse, setVitesse] = useState(1);
   const [pause, setPause] = useState(false);
 
   useEffect(() => {
@@ -17,33 +17,40 @@ function App() {
       return;
     }
     const interval = setInterval(() => {
-      setCellules(simuleUnTour(cellules));
+      setCellStateMatrix(playIteration(cellStateMatrix));
     },
-      2000 - vitesse);
+      1000 / vitesse);
     return () => clearInterval(interval);
-  }, [cellules, vitesse, pause]);
+  }, [cellStateMatrix, vitesse, pause]);
 
   return (
     <>
-      <h1>Le Jeu de la vie</h1>
+      <h1>Le Jeu de la vie</h1>    
       <div>
-        <button onClick={() => setCellules(grilleAleatoire(nbLigne, nbColonne))}>Aléatoire</button>
-        <button onClick={() => setCellules(creerGrille(nbLigne, nbColonne, () => false))}>Grille Morte</button>
-        <button onClick={() => setCellules(creerGrille(nbLigne, nbColonne, () => true))}>Grille Vivante</button>
-        <button onClick={() => setCellules(creerGrille(nbLigne, nbColonne, (idxLigne) => idxLigne % 2 == 0))}>1 Ligne sur 2</button>
-        <button onClick={() => setCellules(creerGrille(nbLigne, nbColonne, (_, idxColonne) => idxColonne % 2 == 0))}>1 Colonne sur 2</button>
+        Grille Aéatoire (% vivante):
+        <button onClick={() => setCellStateMatrix(makeCellStateMatrix(lineCount, rowCount, () => Math.random() < 0.90))}>90%</button>
+        <button onClick={() => setCellStateMatrix(makeCellStateMatrix(lineCount, rowCount, () => Math.random() < 0.75))}>75%</button>
+        <button onClick={() => setCellStateMatrix(makeCellStateMatrix(lineCount, rowCount, () => Math.random() < 0.50))}>50%</button>
+        <button onClick={() => setCellStateMatrix(makeCellStateMatrix(lineCount, rowCount, () => Math.random() < 0.30))}>25%</button>
+        <button onClick={() => setCellStateMatrix(makeCellStateMatrix(lineCount, rowCount, () => Math.random() < 0.10))}>10%</button>
+        <button onClick={() => setCellStateMatrix(makeCellStateMatrix(lineCount, rowCount, () => false))}>0%</button>
       </div>
-      <div><button onClick={() => setPause(!pause)}>{pause ? "Démarrer" : "Pause"}</button>
-        Vitesse: <input type="range"
-          onChange={(e) => setRange(Number(e.target.value))}
-          min={100}
-          max={2000}
+      <div>
+        <label htmlFor="vitesse">
+          Vitesse ({vitesse}x):
+        </label><input id="vitesse" type="range"
+          onChange={(e) => setVitesse(Number(e.target.value))}
+          min={0.5}
+          max={20}
+          step={0.5}
           value={vitesse}></input>
-      </div>
-      <Grille
-        cellules={cellules} cellSize={8}
-        onCellClick={(idxLigne, idxColonne) => setCellules(basculerCellule(idxLigne, idxColonne, cellules))} />
+        <button aria-label="Démarrer/Arrêter" title="Démarrer/Arrêter" onClick={() => setPause(!pause)}>{pause ? "▶️" : "⏸️"}</button>
+        {pause ? <button aria-label="Démarrer pas a pas" title="Démarrer pas à pas" onClick={() => setCellStateMatrix(playIteration(cellStateMatrix))}>⏯️</button> : ""}
 
+      </div>
+      <Grid
+        cellules={cellStateMatrix} cellSize={8}
+        onCellClick={(idxLigne, idxColonne) => setCellStateMatrix(toggleCellState(cellStateMatrix, idxLigne, idxColonne))} />
 
     </>
   )
