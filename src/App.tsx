@@ -28,39 +28,41 @@ function App() {
   return (
     <>
       <h1>Le Jeu de la vie</h1>
+      <div>
+        <button aria-label="Démarrer/Arrêter" title="Démarrer/Arrêter" onClick={() => setPaused(!paused)}>{paused ? "▶️" : "⏸️"}</button>
+        {paused ? <button aria-label="Démarrer pas a pas" title="Démarrer pas à pas" onClick={() => setCellStateMatrix(playIteration(cellStateMatrix))}>⏯️</button> : ""}
+        <label htmlFor="speedFactor">
+          Vitesse ({speedFactor}x):
+        </label>
+        <input id="speedFactor" type="range"
+          onChange={(e) => setSpeedFactor(Number(e.target.value))}
+          min={0.5}
+          max={20}
+          step={0.5}
+          value={speedFactor}></input>
+      </div>
       <details>
-        <summary>Configuration</summary>
+        <summary>Configuration Grille</summary>
         <div>
-          Grille Aéatoire (% vivante):
-          {[90, 75, 50, 30, 10, 0].map((percent) =>
+          Aéatoire (% vivante):
+          {[50, 30, 10, 0].map((percent) =>
           (
-            <button onClick={() => setCellStateMatrix(makeRandomCellStateMatrix(lineCount, rowCount, percent / 100))}>{percent}%</button>
+            <button key={percent} onClick={() => setCellStateMatrix(makeRandomCellStateMatrix(lineCount, rowCount, percent / 100))}>{percent}%</button>
           )
           )}
         </div>
         <div>
-          <label htmlFor="lineCount">Lines: </label>
+          <label htmlFor="lineCount">Lignes: </label>
           <input id="lineCount" type="number" value={lineCount} onChange={(e) => {
             setLineCount(Number(e.target.value));
             setCellStateMatrix(adaptMatrixSize(cellStateMatrix, Number(e.target.value), rowCount));
           }} />
-          <label htmlFor="rowCount">Rows: </label>
+          &nbsp;
+          <label htmlFor="rowCount">Colonnes: </label>
           <input id="rowCount" type="number" value={rowCount} onChange={(e) => {
             setRowCount(Number(e.target.value));
             setCellStateMatrix(adaptMatrixSize(cellStateMatrix, lineCount, Number(e.target.value)));
           }} />
-
-          <label htmlFor="speedFactor">
-            Vitesse ({speedFactor}x):
-          </label>
-          <input id="speedFactor" type="range"
-            onChange={(e) => setSpeedFactor(Number(e.target.value))}
-            min={0.5}
-            max={20}
-            step={0.5}
-            value={speedFactor}></input>
-          <button aria-label="Démarrer/Arrêter" title="Démarrer/Arrêter" onClick={() => setPaused(!paused)}>{paused ? "▶️" : "⏸️"}</button>
-          {paused ? <button aria-label="Démarrer pas a pas" title="Démarrer pas à pas" onClick={() => setCellStateMatrix(playIteration(cellStateMatrix))}>⏯️</button> : ""}
         </div>
       </details>
       <Grid

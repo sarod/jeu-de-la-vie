@@ -6,21 +6,23 @@ export function Grid(props: {
   cellSize: number,
   onCellClick: (idxLigne: number, idxColonne: number) => void
 }) {
-  const cellSize = props.cellSize ||  defaultSize;
+  const cellSize = props.cellSize || defaultSize;
   const onCellClick = props.onCellClick;
-  return (<table  className="grid">
-    {props.cellules.map((ligne, idx) => <tr key={idx}>
-      {ligne.map((e, idxColonne) => {
-      
-        return <td key={idxColonne}
-        onClick={() => onCellClick(idx, idxColonne)}
-          className={e?"alive": "dead"}
-          style={{ height: cellSize, width: cellSize }}
-        />
-      }
+  return (<table className="grid">
+    <tbody>
+      {props.cellules.map((ligne, idx) => <tr key={idx}>
+        {ligne.map((e, idxColonne) => {
+
+          return <td key={idxColonne}
+            onClick={() => onCellClick(idx, idxColonne)}
+            className={e ? "alive" : "dead"}
+            style={{ height: cellSize, width: cellSize }}
+          />
+        }
+        )}
+      </tr>
       )}
-    </tr>
-    )}
+    </tbody>
   </table>
   );
 }
