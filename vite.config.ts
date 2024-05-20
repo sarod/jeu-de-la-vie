@@ -4,13 +4,18 @@ import { VitePWA, VitePWAOptions } from "vite-plugin-pwa";
 
 
 const pwaManifest: Partial<VitePWAOptions> = {
-  registerType: "prompt",
-  includeAssets: [""],
+  registerType: "autoUpdate",
   manifest: {
     name: "Jeu de la vie",
     short_name: "Jeu de la vie",
     description: "Conway's Game of Life in react.",
-    // TODO icons
+    icons: [
+      {
+        "src": "/icon-1024x1024.png",
+        "sizes": "1024x1024",
+        "type": "image/png"
+      }
+    ],
     theme_color: "blue",
     background_color: "red",
     display: "standalone",
